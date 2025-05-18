@@ -6,12 +6,12 @@
 	"resources": {
 		"credentialDocumentation": [
 			{
-				"url": "https://docs.example.com/credentials/neosapi/"
+				"url": "https://neosidekick.com/n8n-integration#credentials"
 			}
 		],
 		"primaryDocumentation": [
 			{
-				"url": "https://docs.example.com/nodes/n8n-nodes-neos.neostrigger/"
+				"url": "https://neosidekick.com/n8n-integration"
 			}
 		]
 	}

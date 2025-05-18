@@ -63,30 +63,30 @@ icon: 'file:neos.svg',
 User Story 3: Implementing the NEOS CMS Trigger Node Structure
 
 Goal: Set up the NeosTrigger class to handle incoming webhooks from NEOS for each specified event.
-1. [ ]	Task 3.1: Extend INodeType in NeosTrigger.node.ts
+1. [x]	Task 3.1: Extend INodeType in NeosTrigger.node.ts
 •	Provide the description property with triggers.
-2. [ ]	Task 3.2: Set up webhooks: [...] array in the node's description
+2. [x]	Task 3.2: Set up webhooks: [...] array in the node's description
 •	At least one item: name: 'default', httpMethod: 'POST', path: 'webhook', responseMode: 'onReceived'.
-3. [ ]	Task 3.3: Implement webhookMethods object with checkExists, create, delete
-•	For now, you can skip actual calls to NEOS to register the webhook. NEOS might not natively register webhooks from external. Instead, keep the placeholders or no-ops if NEOS is push-only.
-4. [ ]	Task 3.4: Implement async webhook(this: IWebhookFunctions) method
+3. [x]	Task 3.3: Implement webhookMethods object with checkExists, create, delete
+•	For now, you can skip actual calls to NEOS to register the webhook. NEOS might not natively register webhooks from external. Instead, keep the placeholders or no-ops if NEOS is push-only. (Placeholders implemented)
+4. [x]	Task 3.4: Implement async webhook(this: IWebhookFunctions) method
 •	Retrieve bodyData (this.getBodyData()).
 •	Retrieve headerData (this.getHeaderData()).
-•	Validate access_token.
-5. [ ]	Task 3.5: Store webhookId if needed in workflowStaticData
-•	Since NEOS triggers might not confirm externally, this may remain empty or store a random ID.
-6. [ ]	Task 3.6: Return workflowData with the parsed event
+•	Validate access_token. (Basic log/placeholder for token check implemented; full validation in US5)
+5. [x]	Task 3.5: Store webhookId if needed in workflowStaticData
+•	Since NEOS triggers might not confirm externally, this may remain empty or store a random ID. (Placeholder comments exist, manual setup assumed for now)
+6. [x]	Task 3.6: Return workflowData with the parsed event
 •	Example:
 
 return {
 workflowData: [this.helpers.returnJsonArray(req.body as IDataObject[])]
 };
+ (Current implementation returns [bodyData])
 
-
-	7. [ 	Task 3.7: Add logic to parse the NEOS event type from body
+	7. [x]	Task 3.7: Add logic to parse the NEOS event type from body
 	•	E.g., event: bodyData.signalName.
-	•	Expose it as JSON output: nodeIdentifier, nodeProperties, etc.
-	8. [ 	Task 3.8: Write a robust test in local environment
+	•	Expose it as JSON output: nodeIdentifier, nodeProperties, etc. (Basic event type parsing and filtering by selection implemented; detailed field exposure in US4)
+	8. [ ]	Task 3.8: Write a robust test in local environment (Manual task for user)
 	•	Use a dummy POST request with cURL or Postman to confirm the node triggers.
 
 ⸻
