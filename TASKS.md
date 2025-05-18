@@ -97,21 +97,21 @@ Updated User Story 4 – Handling All NEOS Signals (Mapping & Fields)
 Goal: Parse every NEOS signal, transform its exact argument list into a JSON payload, and expose those keys as output fields in the Neos CMS Trigger node.
 
 #	One-story-point Task	✓
-4.1	Define TypeScript interface NeosWebhookPayload with optional keys:ts<br>interface NeosWebhookPayload {<br>  event: NeosSignal;            // "nodeUpdated", …<br>  nodeIdentifier: string;       // always present<br>  workspace?: string;           // for all Node-based events<br>  contextPath?: string;         // Node::getContextPath()<br>  propertyName?: string;        // only nodePropertyChanged<br>  oldValue?: any;               // 〃<br>  newValue?: any;               // 〃<br>  targetWorkspace?: string;     // publish / afterNodePublishing<br>  timestamp: string;            // ISO-8601<br>}<br>	[ ]
-4.2	nodeUpdated — map one-argument signalphp<br>$payload = [..., 'event'=>'nodeUpdated',<br> 'workspace'=>$node->getWorkspace()->getName(),<br> 'contextPath'=>$node->getContextPath()];<br>Add Jest unit test to assert required keys. [ ]	[ ]
-4.3	nodeAdded — identical mapping to nodeUpdated; verify unit test passes distinct event value. [ ]	[ ]
-4.4	nodeRemoved — same mapping; add comment that the identifier is still valid pre-delete. [ ]	[ ]
-4.5	nodePropertyChanged — extend mapping with propertyName, oldValue, newValue; write test that array-filtered payload omits nulls for other events. [ ]	[ ]
-4.6	nodePublished — add targetWorkspace from second argument; ensure workspace (source), targetWorkspace (dest) both present. [ ]	[ ]
-4.7	nodeDiscarded — single-workspace argument; include only nodeIdentifier, workspace, timestamp. [ ]	[ ]
-4.8	afterNodePublishing — clone mapping from nodePublished; verify emitted after publish in functional test. [ ]	[ ]
-4.9	Update webhook() parser: iterate over body.event; dynamically build n8n item with all present keys, preserving types (string vs any). [ ]	[ ]
-4.10	Expose output descriptions in node properties:- event (string) – one of the seven signals- nodeIdentifier (string)- workspace (string)- contextPath (string)- propertyName (string)- oldValue/newValue (mixed)- targetWorkspace (string)- timestamp (string, ISO-8601)Update displayOptions so fields appear only when present. [ ]	[ ]
-4.11	Add switch-node recipe to docs: demonstrate branching on event value. [ ]	[ ]
-4.12	Validate payload size (<32 KB) after filtering nulls; add safeguard to truncate enormous oldValue/newValue (>4 KB). [ ]	[ ]
-4.13	Ensure access-token check precedes payload parsing; unit test rejects missing/invalid header. [ ]	[ ]
-4.14	Update README examples with concrete JSON for each signal reflecting the new schema. [ ]	[ ]
-4.15	Run end-to-end smoke tests: Post sample payloads for all seven events; confirm n8n workflow receives correct keys and values. [ ]	[ ]
+4.1	Define TypeScript interface NeosWebhookPayload with optional keys:ts<br>interface NeosWebhookPayload {<br>  event: NeosSignal;            // "nodeUpdated", …<br>  nodeIdentifier: string;       // always present<br>  workspace?: string;           // for all Node-based events<br>  contextPath?: string;         // Node::getContextPath()<br>  propertyName?: string;        // only nodePropertyChanged<br>  oldValue?: any;               // 〃<br>  newValue?: any;               // 〃<br>  targetWorkspace?: string;     // publish / afterNodePublishing<br>  timestamp: string;            // ISO-8601<br>}<br>	[x]
+4.2	nodeUpdated — map one-argument signalphp<br>$payload = [..., 'event'=>'nodeUpdated',<br> 'workspace'=>$node->getWorkspace()->getName(),<br> 'contextPath'=>$node->getContextPath()];<br>Add Jest unit test to assert required keys. [ ]	[ ] (Interface defines expectation)
+4.3	nodeAdded — identical mapping to nodeUpdated; verify unit test passes distinct event value. [ ]	[ ] (Interface defines expectation)
+4.4	nodeRemoved — same mapping; add comment that the identifier is still valid pre-delete. [ ]	[ ] (Interface defines expectation)
+4.5	nodePropertyChanged — extend mapping with propertyName, oldValue, newValue; write test that array-filtered payload omits nulls for other events. [ ]	[ ] (Interface defines expectation)
+4.6	nodePublished — add targetWorkspace from second argument; ensure workspace (source), targetWorkspace (dest) both present. [ ]	[ ] (Interface defines expectation)
+4.7	nodeDiscarded — single-workspace argument; include only nodeIdentifier, workspace, timestamp. [ ]	[ ] (Interface defines expectation)
+4.8	afterNodePublishing — clone mapping from nodePublished; verify emitted after publish in functional test. [ ]	[ ] (Interface defines expectation)
+4.9	Update webhook() parser: iterate over body.event; dynamically build n8n item with all present keys, preserving types (string vs any). [x]	[ ] (Typed bodyData, using spread for processedBodyData ensures present keys are passed)
+4.10	Expose output descriptions in node properties:- event (string) – one of the seven signals- nodeIdentifier (string)- workspace (string)- contextPath (string)- propertyName (string)- oldValue/newValue (mixed)- targetWorkspace (string)- timestamp (string, ISO-8601)Update displayOptions so fields appear only when present. [ ]	[ ] (Output structure defined by NeosWebhookPayload; displayOptions not applicable for output like this; for docs)
+4.11	Add switch-node recipe to docs: demonstrate branching on event value. [ ]	[ ] (For docs - US9)
+4.12	Validate payload size (<32 KB) after filtering nulls; add safeguard to truncate enormous oldValue/newValue (>4 KB). [x]	[ ] (Truncation logic added)
+4.13	Ensure access-token check precedes payload parsing; unit test rejects missing/invalid header. [ ]	[ ] (Placeholder check exists; full implementation in US5; tests later)
+4.14	Update README examples with concrete JSON for each signal reflecting the new schema. [ ]	[ ] (For docs - US9)
+4.15	Run end-to-end smoke tests: Post sample payloads for all seven events; confirm n8n workflow receives correct keys and values. [ ]	[ ] (Manual task for user)
 ⸻
 
 User Story 5: Access Token Authentication & Verification
