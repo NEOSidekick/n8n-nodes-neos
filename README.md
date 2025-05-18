@@ -1,50 +1,86 @@
-# n8n-nodes-neos
+# n8n‑nodes‑neos
 
-This is an n8n community node. It lets you use a Neos CMS website in your n8n workflows.
+A community node that lets **n8n** react to events coming from your **Neos CMS**. Install the package, drop the node into any workflow, and automate everything that happens when editors publish, update, or remove content in Neos.
 
-Neos CMS is a powerfull website system and content application platform.
+[Installation](#installation) · [Webhook setup in Neos](#webhook-setup-in-neos) · [Credentials in n8n](#credentials-in-n8n) · [Signal events & examples](#signal-events--examples) · [Screenshots](#screenshots) · [Resources](#resources) · [Version history](#version-history)
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
-
-[Installation](#installation)  
-[Operations](#operations)  
-[Credentials](#credentials)  <!-- delete if no auth needed -->  
-[Compatibility](#compatibility)  
-[Usage](#usage)  <!-- delete if not using this section -->  
-[Resources](#resources)  
-[Version history](#version-history)  <!-- delete if not using this section -->  
+---
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+1. **Self‑hosted n8n** – follow the official guide to [install community nodes](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n UI or via npm.
+2. Search for `n8n-nodes-neos`, install it, then reload n8n; the **Neos CMS** Trigger and Action nodes will appear in the Node Picker.
 
-## Operations
+> **Minimum n8n version:** 1.36.0 · **Node.js:** ≥ 20.15
+> **Package**: `npm i n8n-nodes-neos`
 
-_List the operations supported by your node._
+---
 
-## Credentials
+## Webhook setup in Neos
 
-_If users need to authenticate with the app/service, provide details here. You should include prerequisites (such as signing up with the service), available authentication methods, and how to set them up._
+1. **Open the Neos backend** and navigate to **Administration → Webhooks** (or your custom integration module).
+2. **Create a new webhook**
 
-## Compatibility
+   * **URL** → `https://<YOUR‑N8N‑HOST>/webhook/neos`
+     Replace `<YOUR‑N8N‑HOST>` with the domain or IP of your n8n instance.
+   * **Method** → `POST`
+   * **Content‑Type** → `application/json`
+3. **Select events** to send (e.g. *nodePublished*, *nodeUpdated*, *nodeRemoved*).
+4. **Save** – Neos now POSTs a JSON payload to n8n whenever the chosen signal fires.
 
-_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+---
 
-## Usage
+## Credentials in n8n
 
-_This is an optional section. Use it to help users with any difficult or confusing aspects of the node._
+1. **Generate an access token** in **Neos → Administration → API Tokens** (requires Neos v8+ or the REST API addon).
+2. In n8n open **Settings → Credentials → New** and choose **“Neos CMS API”**.
+3. Fill in:
 
-_By the time users are looking for community nodes, they probably already know n8n basics. But if you expect new users, you can link to the [Try it out](https://docs.n8n.io/try-it-out/) documentation to help them get started._
+   * **Neos Instance URL** – `https://your‑site.example` (optional but recommended so the node can build links).
+   * **Access Token** – paste the token from Neos.
+4. Click **Save**. The credential can now be selected in every Neos node.
+
+---
+
+## Signal events & examples
+
+| Signal          | When it fires                                | Minimal JSON payload                                                                                           |
+| --------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `nodePublished` | Content is published to the *live* workspace | `{ "signalName": "nodePublished", "nodeIdentifier": "12345‑abc", "nodePath": "/sites/example/home" }`          |
+| `nodeCreated`   | A new node is created in any workspace       | `{ "signalName": "nodeCreated", "nodeIdentifier": "98765‑xyz", "nodePath": "/sites/example/home/new-page" }`   |
+| `nodeUpdated`   | An existing node is modified                 | `{ "signalName": "nodeUpdated", "nodeIdentifier": "abcde‑12345", "changedFields": ["title", "bodyText"] }`     |
+| `nodeRemoved`   | A node is deleted                            | `{ "signalName": "nodeRemoved", "nodeIdentifier": "fghij‑67890", "nodePath": "/sites/example/home/old-page" }` |
+
+Use an **IF** node in n8n to branch on `{{$json["signalName"]}}` and build separate flows per event.
+
+---
+
+## Screenshots
+
+> **Notice**: Add your own screenshots to `docs/images/` and adjust filenames below.
+
+![Node in search panel](docs/images/neos-node-search.png)
+![Node configuration](docs/images/neos-node-config.png)
+![Example workflow](docs/images/neos-workflow-example.png)
+
+---
 
 ## Resources
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* _Link to app/service documentation._
+* **n8n Community Nodes documentation** – [https://docs.n8n.io/integrations/community-nodes/](https://docs.n8n.io/integrations/community-nodes/)
+* **Neos CMS documentation** – [https://docs.neos.io/](https://docs.neos.io/)
+* **n8n integrations index** – [https://docs.n8n.io/integrations/](https://docs.n8n.io/integrations/)
+* **Package homepage** – [https://neosidekick.com/n8n-integration](https://neosidekick.com/n8n-integration) *(external)*
 
-## Version history
+---
 
-_This is another optional section. If your node has multiple versions, include a short description of available versions and what changed, as well as any compatibility impact._
+## Version history
 
+| Version | Date       | Notes                                                               |
+| ------- | ---------- | ------------------------------------------------------------------- |
+| 0.1.0   | 2025‑05‑18 | Initial public release with webhook trigger and example action node |
+
+---
 
 ## License
 

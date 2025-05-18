@@ -32,7 +32,7 @@ User Story 2: Designing the NEOS CMS Node Type & File Structure
 
 Goal: Define how the NEOS node type will appear in n8n's UI (display name, icon, etc.) and plan the code layout.
 1. [x]	Task 2.1: Create neos.svg icon in nodes/Neos/
-•	Use NEOS official logo if licensing allows or a custom placeholder.
+•	Use NEOS official logo.
 •	SVG dimensions ~ 60×60 px.
 2. [x]	Task 2.2: Create Neos.node.json describing node metadata (if needed) -> Created NeosTrigger.node.json
 •	Follow the pattern from Asana.node.json.
@@ -186,7 +186,7 @@ Goal: NEOS CMS supports dynamic webhook registration, replicate the Asana approa
 User Story 8: Testing & QA
 
 Goal: Ensure the node, triggers, and access token logic work in real or simulated scenarios.
-1. [ ]	Task 8.1: Write unit tests for the NEOS CMS Trigger node (if the n8n environment supports them).
+1. [ ]	Task 8.1: Write unit tests for the NEOS CMS Trigger node.
 •	Check correct parsing of sample payloads.
 2. [ ]	Task 8.2: Write an integration test with cURL or Postman to the local webhook endpoint.
 •	Post a mock "nodePublished" event with valid access_token.
@@ -206,14 +206,14 @@ Goal: Ensure the node, triggers, and access token logic work in real or simulate
 User Story 9: Documentation & Sample Usage
 
 Goal: Provide thorough instructions so users and the AI agent know how to configure everything.
-1. [ ]	Task 9.1: Create or update README.md in the nodes/Neos/ folder
+1. [x]	Task 9.1: Update README.md
 •	Quick overview of the NEOS CMS integration.
-2. [ ]	Task 9.2: Document "How to Set the Webhook in NEOS"
+2. [x]	Task 9.2: Document "How to Set the Webhook in NEOS"
 •	Step-by-step for the user: "Go to NEOS backend, set the URL to https://<n8n-host>/webhook/neos…"
-3. [ ]	Task 9.3: Document "How to Add Credentials in n8n"
+3. [x]	Task 9.3: Document "How to Add Credentials in n8n"
 •	Where to find or create the accessToken in NEOS.
 •	Steps in the n8n Credential editor.
-4. [ ]	Task 9.4: Provide examples for each signal event and the JSON fields received.
+4. [x]	Task 9.4: Provide examples for each signal event and the JSON fields received.
 •	E.g., nodePublished:
 
 {
@@ -223,9 +223,8 @@ Goal: Provide thorough instructions so users and the AI agent know how to config
 }
 
 
-	5. [ 	Task 9.5: Add screenshots of the node configuration in n8n.
+	5. [ ] 	Task 9.5: Add screenshots of the node configuration in n8n.
 	•	Show the user how to drag & drop, set up event filters.
-	6. [ 	Task 9.6: Publish these docs as a Confluence page or in the official n8n docs if relevant.
 
 ⸻
 
