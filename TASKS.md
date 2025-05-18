@@ -165,18 +165,21 @@ Goal: Let users choose how they want to filter or handle the events once the nod
 
 User Story 7: Handling NEOS → n8n Webhook Creation (If the CMS Supports Registration)
 
-Goal: If the NEOS CMS supports dynamic webhook registration, replicate the Asana approach. If not, keep placeholders.
-1. [ ]	Task 7.1: Investigate NEOS documentation for registering external webhook URLs.
-•	If possible, do a POST /neos/api/webhooks with targetURL and events.
-2. [ ]	Task 7.2: If not available, proceed with a manual config approach.
-•	That means the user sets the n8n webhook URL directly in NEOS.
-3. [ ]	Task 7.3: If dynamic is possible, implement the create() method under webhookMethods.default.
-•	Build the request to NEOS with the selected events + the webhookUrl.
-4. [ ]	Task 7.4: Implement the checkExists() method to see if the NEOS webhook already exists.
-•	e.g. GET /neos/api/webhooks to see if a matching targetUrl is found.
-5. [ ]	Task 7.5: Implement the delete() method to remove or disable the registration.
-•	e.g. DELETE /neos/api/webhooks/:id
-6. [ ]	Task 7.6: If NEOS does not support deletion, return true with a no-op.
+Goal: NEOS CMS supports dynamic webhook registration, replicate the Asana approach. Implement based on @NEOS_TASKS.md
+1. [x] Task 7.1: Create a file nodes/Neos/GenericFunctions.ts.
+• Include a helper neosApiRequest that takes (method, endpoint, body, qs) and uses this.helpers.request.
+• Handle errors, including 409 for existing webhooks.
+2. [x] Task 7.2: In NeosTrigger.node.ts, import and use neosApiRequest for checkExists, create, delete.
+• Pass this (IHookFunctions) to neosApiRequest.call(this, ...).
+3. [x] Task 7.3: Implement the create() method under webhookMethods.default.
+• Build the request to NEOS with the selected events + the webhookUrl.
+4. [x] Task 7.4: Implement the checkExists() method to see if the NEOS webhook already exists.
+• e.g. GET /neos/api/webhooks to see if a matching targetUrl is found.
+5. [x] Task 7.5: Implement the delete() method to remove or disable the registration.
+• e.g. DELETE /neos/api/webhooks/:id
+6. [x] Task 7.6: If NEOS does not support deletion, return true with a no-op.
+7. [x] Task 7.7: Update webhook() method to handle Neos handshake (X-Webhook-Secret, body.handshake === true).
+8. [x] Task 7.8: Update webhook() method to validate HMAC signature (X-Webhook-Signature) using stored hmacSecret.
 
 ⸻
 
