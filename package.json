@@ -39,6 +39,7 @@
     ],
     "nodes": [
       "dist/nodes/Neos/Neos.node.js",
+      "dist/nodes/Neos/NeosTrigger.node.js",
       "dist/nodes/HttpBin/HttpBin.node.js"
     ]
   },

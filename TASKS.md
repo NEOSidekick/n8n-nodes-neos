@@ -34,12 +34,12 @@ Goal: Define how the NEOS node type will appear in n8n's UI (display name, icon,
 1. [x]	Task 2.1: Create neos.svg icon in nodes/Neos/
 •	Use NEOS official logo if licensing allows or a custom placeholder.
 •	SVG dimensions ~ 60×60 px.
-2. [ ]	Task 2.2: Create Neos.node.json describing node metadata (if needed)
+2. [x]	Task 2.2: Create Neos.node.json describing node metadata (if needed) -> Created NeosTrigger.node.json
 •	Follow the pattern from Asana.node.json.
-3. [ ]	Task 2.3: Create NeosTrigger.node.ts file
+3. [x]	Task 2.3: Create NeosTrigger.node.ts file
 •	Mimic the AsanaTrigger structure.
 •	Put at nodes/Neos/NeosTrigger.node.ts.
-4. [ ]	Task 2.4: Insert the INodeTypeDescription with the following keys:
+4. [x]	Task 2.4: Insert the INodeTypeDescription with the following keys:
 
 description: INodeTypeDescription = {
 displayName: 'Neos CMS',
@@ -48,15 +48,15 @@ icon: 'file:neos.svg',
 ...
 };
 
-	•	Confirm all standard fields: version, group, defaults, etc.
+	•	Confirm all standard fields: version, group, defaults, etc. -> Done for NeosTrigger (name: 'neosTrigger')
 
-	5. [ 	Task 2.5: Decide which credentials type to use
-	•	Possibly NeosApi with an Access Token field or basic OAuth flow if NEOS supports it.
-	6. [ 	Task 2.6: Add placeholders for each of the signals in the properties array
-	•	nodeUpdated, nodeAdded, nodeRemoved, nodePropertyChanged, nodePublished, nodeDiscarded, afterNodePublishing.
-	7. [ 	Task 2.7: Discuss naming for the Resource + Operation model
+	5. [x]	Task 2.5: Decide which credentials type to use
+	•	Possibly NeosApi with an Access Token field or basic OAuth flow if NEOS supports it. -> Placeholder for neosApi added.
+	6. [x]	Task 2.6: Add placeholders for each of the signals in the properties array
+	•	nodeUpdated, nodeAdded, nodeRemoved, nodePropertyChanged, nodePublished, nodeDiscarded, afterNodePublishing. -> Added 'events' multiOptions property.
+	7. [x]	Task 2.7: Discuss naming for the Resource + Operation model
 	•	Alternatively, name them "Events" or "Trigger Type."
-	•	Possibly treat each signal as an event type in a single "Trigger" operation.
+	•	Possibly treat each signal as an event type in a single "Trigger" operation. -> Decided on 'Events' property.
 
 ⸻
 

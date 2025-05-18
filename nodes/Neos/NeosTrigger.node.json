@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-neos.neosTrigger",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["CMS", "Trigger"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://docs.example.com/credentials/neosapi/"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://docs.example.com/nodes/n8n-nodes-neos.neostrigger/"
+			}
+		]
+	}
+}
