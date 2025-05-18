@@ -117,12 +117,12 @@ Goal: Parse every NEOS signal, transform its exact argument list into a JSON pay
 User Story 5: Access Token Authentication & Verification
 
 Goal: Secure the integration so that random requests cannot spam n8n's workflow.
-1. [ ]	Task 5.1: Decide credential name (e.g. neosApi) in credentials array of the node.
-•	Possibly 'neosApi': { ... }.
-2. [ ]	Task 5.2: Create a new credential file (e.g. NeosApi.credentials.ts)
+1. [x]	Task 5.1: Decide credential name (e.g. neosApi) in credentials array of the node.
+•	Possibly 'neosApi': { ... }. (Decision: neosApi)
+2. [x]	Task 5.2: Create a new credential file (e.g. NeosApi.credentials.ts)
 •	Implement ICredentialType.
-•	Fields: accessToken, hostUrl (if needed).
-3. [ ]	Task 5.3: Add to node's credentials property:
+•	Fields: accessToken, hostUrl (if needed). (Implemented with neosInstanceUrl (optional) and accessToken)
+3. [x]	Task 5.3: Add to node's credentials property:
 
 credentials: [
 {
@@ -130,17 +130,17 @@ name: 'neosApi',
 required: true
 }
 ]
+ (Already present and confirmed)
 
-
-	4. [ 	Task 5.4: In webhook() method, retrieve the stored token from this.getCredentials('neosApi').
-	•	Example: const { accessToken } = this.getCredentials('neosApi') as { accessToken: string };
-	5. [ 	Task 5.5: Compare accessToken with the headerData['access_token'] or query param.
-	•	If mismatch → throw NodeOperationError with 401 status.
-	6. [ 	Task 5.6: Write fallback logic if the user wants no auth (optional).
-	•	Possibly a user config that disables token check.
-	7. [ 	Task 5.7: Provide user instructions on retrieving the token from NEOS.
+	4. [x]	Task 5.4: In webhook() method, retrieve the stored token from this.getCredentials('neosApi').
+	•	Example: const { accessToken } = this.getCredentials('neosApi') as { accessToken: string }; (Implemented)
+	5. [x]	Task 5.5: Compare accessToken with the headerData['x-access-token'] or query param.
+	•	If mismatch → throw NodeOperationError with 401 status. (Implemented, throws 401 or 403)
+	6. [ ]	Task 5.6: Write fallback logic if the user wants no auth (optional).
+	•	Possibly a user config that disables token check. (Skipped for security)
+	7. [ ]	Task 5.7: Provide user instructions on retrieving the token from NEOS. (For US9 - Documentation)
 	•	This might be a manual step if NEOS requires configuration.
-	8. [ 	Task 5.8: Test end-to-end with a random token:
+	8. [ ]	Task 5.8: Test end-to-end with a random token: (Manual task for user)
 	•	Good token → triggers the workflow.
 	•	Bad token → returns 401/403.
 

@@ -5,8 +5,9 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 	IWebhookResponseData,
+	// ICredentialsDecrypted, // Not strictly needed if we cast to our own interface directly
 } from 'n8n-workflow';
-import { NodeConnectionType } from 'n8n-workflow';
+import { NodeConnectionType } from 'n8n-workflow'; // Removed NodeOperationError
 
 // Define Neos Signal Types and Payload Structure (User Story 4.1)
 export type NeosSignal =
@@ -37,6 +38,12 @@ const TRUNCATION_MESSAGE = '[TRUNCATED DUE TO LENGTH]';
 // Placeholder for any generic functions we might need later, similar to Asana's GenericFunctions.ts
 // For now, direct implementation or simple helpers can be within this file.
 
+// Define structure for Neos API credentials data
+interface INeosApiCredentialsData {
+	neosInstanceUrl?: string;
+	accessToken: string;
+}
+
 export class NeosTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Neos CMS Trigger',
@@ -52,7 +59,7 @@ export class NeosTrigger implements INodeType {
 		outputs: [NodeConnectionType.Main],
 		credentials: [
 			{
-				name: 'neosApi', // To be defined in User Story 5
+				name: 'neosApi',
 				required: true,
 			},
 		],
@@ -130,34 +137,61 @@ export class NeosTrigger implements INodeType {
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const req = this.getRequestObject();
-		// Cast to NeosWebhookPayload, but also keep IDataObject for flexibility if other fields are sent (Task 4.9)
+		const res = this.getResponseObject();
 		const bodyData = this.getBodyData() as NeosWebhookPayload;
 		const headerData = this.getHeaderData() as IDataObject;
 
-		// User Story 5: Access token validation will go here.
-		const receivedToken = headerData['x-access-token'] || req.query.access_token;
-		if (receivedToken) {
-			console.log(`Neos Trigger: Received access token (length: ${receivedToken.toString().length})`);
-		} else {
-			console.log('Neos Trigger: No access token received in headers (x-access-token) or query (access_token).');
-			// Depending on policy in US5, might throw new NodeOperationError(this.getNode(), 'Missing access token', { statusCode: 401 });
+		let neosApiCredentials: INeosApiCredentialsData;
+		try {
+			// Cast directly to our specific interface
+			neosApiCredentials = await this.getCredentials('neosApi') as INeosApiCredentialsData;
+		} catch (error) {
+			console.error('Neos Trigger: Error retrieving credentials or credentials not assigned.', error);
+			res.status(401).send('Neos API credentials are not configured or accessible.');
+			return { noWebhookResponse: true };
 		}
 
+		// Check if credentials object or accessToken is missing (e.g. if credential was empty)
+		if (!neosApiCredentials || typeof neosApiCredentials.accessToken !== 'string' || neosApiCredentials.accessToken === '') {
+			console.log('Neos Trigger: Access token is not configured or empty in Neos API credentials.');
+			res.status(401).send('Access token is not configured or empty in Neos API credentials.');
+			return { noWebhookResponse: true };
+		}
+		const expectedToken = neosApiCredentials.accessToken;
+
+		const receivedTokenHeader = headerData['x-access-token'] as string | undefined;
+		const receivedTokenQuery = req.query.access_token as string | undefined;
+		const receivedToken = receivedTokenHeader || receivedTokenQuery;
+
+		if (!receivedToken) {
+			console.log('Neos Trigger: Missing access token in webhook request.');
+			res.status(401).send('Missing access token in webhook request.');
+			return { noWebhookResponse: true };
+		}
+
+		if (receivedToken !== expectedToken) {
+			console.log('Neos Trigger: Invalid access token.');
+			res.status(403).send('Invalid access token.');
+			return { noWebhookResponse: true };
+		}
+
+		console.log('Neos Trigger: Access token validated successfully.');
+
 		const selectedEvents = this.getNodeParameter('events', []) as string[];
-		// Use `bodyData.event` as per NeosWebhookPayload interface (Task 4.1)
 		const eventType = bodyData.event;
 
 		if (!eventType) {
 			console.log('Neos Trigger: Received webhook but no event type (event field) found in payload.');
-			return {}; // No event to process
+			res.status(400).send('Missing event type in payload.');
+			return { noWebhookResponse: true };
 		}
 
 		if (selectedEvents.length > 0 && !selectedEvents.includes(eventType)) {
-			console.log(`Neos Trigger: Received event '${eventType}' but it is not in the selected list of events to process.`);
-			return {}; // Event not in the list user wants to process
+			console.log(`Neos Trigger: Received event '${eventType}' but it is not in the selected list of events to process. Sending 200 OK to acknowledge receipt but not processing.`);
+			res.status(200).send(`Event '${eventType}' received but not processed as per node configuration.`);
+			return { noWebhookResponse: true };
 		}
 
-		// Task 4.12: Truncate oldValue and newValue if they are long strings
 		const processedBodyData = { ...bodyData };
 		if (typeof processedBodyData.oldValue === 'string' && processedBodyData.oldValue.length > MAX_VALUE_LENGTH) {
 			processedBodyData.oldValue = processedBodyData.oldValue.substring(0, MAX_VALUE_LENGTH) + TRUNCATION_MESSAGE;
