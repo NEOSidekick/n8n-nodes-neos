@@ -3,6 +3,7 @@ import type { ICredentialType, INodeProperties } from 'n8n-workflow';
 export class NeosApi implements ICredentialType {
 	name = 'neosApi';
 	displayName = 'Neos CMS API';
+	icon = 'file:neos.svg' as const;
 	documentationUrl = 'https://neosidekick.com/n8n-integration#credentials';
 	properties: INodeProperties[] = [
 		{

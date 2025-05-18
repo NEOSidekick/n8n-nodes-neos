@@ -1,4 +1,4 @@
-# n8n‑nodes‑neos
+# WORK IN PROGSESS: n8n‑nodes‑neos
 
 A community node that lets **n8n** react to events coming from your **Neos CMS**. Install the package, drop the node into any workflow, and automate everything that happens when editors publish, update, or remove content in Neos.
 
@@ -13,20 +13,6 @@ A community node that lets **n8n** react to events coming from your **Neos CMS*
 
 > **Minimum n8n version:** 1.36.0 · **Node.js:** ≥ 20.15
 > **Package**: `npm i n8n-nodes-neos`
-
----
-
-## Webhook setup in Neos
-
-1. **Open the Neos backend** and navigate to **Administration → Webhooks** (or your custom integration module).
-2. **Create a new webhook**
-
-   * **URL** → `https://<YOUR‑N8N‑HOST>/webhook/neos`
-     Replace `<YOUR‑N8N‑HOST>` with the domain or IP of your n8n instance.
-   * **Method** → `POST`
-   * **Content‑Type** → `application/json`
-3. **Select events** to send (e.g. *nodePublished*, *nodeUpdated*, *nodeRemoved*).
-4. **Save** – Neos now POSTs a JSON payload to n8n whenever the chosen signal fires.
 
 ---
 
@@ -79,6 +65,51 @@ Use an **IF** node in n8n to branch on `{{$json["signalName"]}}` and build separ
 | Version | Date       | Notes                                                               |
 | ------- | ---------- | ------------------------------------------------------------------- |
 | 0.1.0   | 2025‑05‑18 | Initial public release with webhook trigger and example action node |
+
+
+---
+
+## Architecture
+
+![architecture.png](docs/images/architecture.png)
+
+```mermaid
+sequenceDiagram
+    participant N8N as n8n (NeosTrigger)
+    participant Neos as Neos CMS
+
+    rect rgb(230, 230, 255)
+    note over N8N: Activation phase
+    N8N->>Neos: GET /webhooks<br/><small>(includes Bearer Token)</small>
+    Neos-->>N8N: Returns existing webhooks (if any)
+    alt No matching webhook found
+        N8N->>Neos: POST /webhooks<br/><small>(includes Bearer Token)</small>
+        Neos-->>N8N: Webhook ID + secret<br/><small>(Neos trusts n8n via token)</small>
+        N8N->>N8N: Store webhookId & hmacSecret
+        note over Neos: Handshake step
+        Neos->>N8N: POST handshake<br/>X-Webhook-Secret
+        N8N-->>Neos: 200 OK<br/>Handshake acknowledged
+    end
+    end
+
+    rect rgb(200, 230, 200)
+    note over Neos: Event trigger phase
+    Neos->>N8N: POST event payload<br/>X-Webhook-Signature (HMAC)
+    N8N->>N8N: Validate signature using stored hmacSecret
+    alt Valid signature + matching event
+        N8N->>N8N: Trigger the workflow
+        N8N-->>Neos: 200 OK
+    else Invalid signature / event not selected
+        N8N-->>Neos: 4xx or 200 (ignored)
+    end
+    end
+
+    rect rgb(250, 240, 200)
+    note over N8N,Neos: Trust Mechanism
+    note over N8N: Outgoing requests to Neos use Bearer Token<br/>→ Neos validates token
+    note over Neos: Incoming events to n8n are signed with HMAC<br/>→ n8n validates signature
+    end
+```
 
 ---
 

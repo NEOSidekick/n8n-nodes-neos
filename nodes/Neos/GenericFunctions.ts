@@ -80,7 +80,7 @@ export async function neosApiRequest(
 		const errorContext: JsonObject = {
 			errorMessage: (error as Error).message,
 			errorName: (error as Error).name,
-			// stack: (error as Error).stack, // Stack can be very long
+			stack: (error as Error).stack ?? null, // Assign null if stack is undefined
 		};
 		throw new NodeApiError(this.getNode(), errorContext, { message: 'An unexpected error occurred during Neos API request.' });
 	}
